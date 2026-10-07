@@ -31,6 +31,8 @@ layer) are described in [modules-vision.md](../design/modules-vision.md).
 | Agents | A built-in agent, internal only, on Mojo IPC. It is never exposed outside Pliant. Pliant exposes its capabilities to the user's external agent through MCP (external agent → Pliant). The built-in agent reaches the external agent through A2A, one way (built-in → external), to reuse its memory without importing it. MCP ships first; A2A follows. The built-in agent works without an external agent. |
 | Editor, version 1 | Reuse the VS Code core. VS Code extensions are out of scope. |
 | Editor, long term | An own, lighter editor with VS Code compatibility. |
+| Terminal | Part of the editor layer, shared by the user and the agent. |
+| Communication | No own chat or meeting service. Slack, Zoom and similar run as web apps in the browser layer; messages become information objects. Messages to people are sent only after user confirmation. |
 | Shell UI | AppKit plus Pliant's own DSL. No SwiftUI, no Electron, no other UI engine. AI writes the user's layout, so correctness, performance, and stability come first. The DSL layer translates definitions to native views and refreshes only the changed parts. |
 | Data | One local SQLite database for information objects. Files on disk remain the source of truth. |
 | Next milestone | A minimal browse + edit loop. |

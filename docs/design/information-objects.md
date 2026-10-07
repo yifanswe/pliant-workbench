@@ -25,7 +25,7 @@ result are all objects that the user can open, edit, reference and transform.
 ```
 Object {
   id: ObjectId            // stable, local
-  source: web | file | note | agent
+  source: web | file | note | agent | message | terminal
   origin: URL | path | null
   title: string
   media_type: string      // text/html, text/markdown, text/x-rust, ...

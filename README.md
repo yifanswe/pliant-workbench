@@ -8,7 +8,7 @@
 
 ## Why
 
-Browsing and editing are the two main things people do with information. Today they happen in different applications: a browser to read, an editor to write, and a chat window to talk to an agent. Users copy content between them all day.
+Browsing and editing are the two main things people do with information. Today they happen in different applications: a browser to read, an editor to write, a terminal to run, Slack or Zoom to talk to people, and a chat window to talk to an agent. Users copy content between them all day.
 
 Pliant puts all three in one application, and it is a new kind of application. You select a paragraph on a page, and it opens in a scratch pad next to the page. You keep typing; you do not @mention anyone or press a button. Your agent watches the scratch pad and helps. It fills a link you forgot, answers a question, or proposes a change. Nothing changes until you apply it.
 
@@ -21,8 +21,8 @@ Everyone works differently, so Pliant does not ship one fixed workflow. You tell
 | Module | What it does |
 | --- | --- |
 | 1. UI customization (DSL) | One definition language for the browse area, the edit area, the agent area, and the triggers between them. AppKit renders it and refreshes only what changed. |
-| 2. Browser layer | Browser capabilities in the Pliant-owned embedder over Chromium Content, exposed as Pliant APIs. |
-| 3. Editor layer | The main place where you steer agents. Scratch pads are shared by you and the agent. |
+| 2. Browser layer | Browser capabilities in the Pliant-owned embedder over Chromium Content, exposed as Pliant APIs. Slack, Zoom and other communication tools run here as web apps. |
+| 3. Editor layer | The main place where you steer agents. Scratch pads and a terminal are shared by you and the agent. |
 | 4. Agent layer | A built-in agent inside Pliant. Your own agent uses Pliant through MCP. The built-in agent asks your agent for memory through A2A, one way. Your agent's memory is never imported. |
 
 All four modules share one [information-object model](docs/design/information-objects.md): pages, files, notes, and agent results are objects with anchors, links, and revertible changes. See the [module vision](docs/design/modules-vision.md) for the full design.

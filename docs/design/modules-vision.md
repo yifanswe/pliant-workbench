@@ -31,7 +31,20 @@ Chromium Content (see [engine capabilities](../contracts/engine-capabilities.md)
 agent calls these APIs to browse together with the user and to connect
 browsing with the editor, the custom UI and the agent.
 
-## 3. Editor layer
+### Communication through the browser layer
+
+**Decision (2026-10-07):** Pliant does not build its own chat or meeting
+service. People communication (Slack, Discord, Zoom, Google Meet and similar)
+runs as web apps in the browse area.
+
+- Messages and meeting content become information objects (`message` source)
+  through browser-layer APIs or the service's own API/MCP.
+- The agent can read messages and draft replies. A message to another person
+  is sent only after the user confirms it.
+- Real-time meetings need browser capabilities: camera, microphone, screen
+  share, notifications and background audio. These come from the embedder.
+
+## 3. Editor layer (edit and run)
 
 The editor is the main place where the user steers agent work. Chat-only
 collaboration ends here. The user can still give direct instructions, but the
@@ -47,6 +60,11 @@ Examples:
 - The user writes "you can refer to this website (to be found)". The agent
   finds the page from context and history, replaces the placeholder, and shows
   a small control to revert or pick another option.
+- A terminal is part of the editor layer. The user and the agent share it:
+  the user sees every command the agent runs and can step in. Terminal output
+  can become an information object (for example, select an error and send it
+  to a scratch pad). Agent command permissions are designed with the
+  code-execution sandbox.
 - The agent gets a code execution environment. The user takes in information,
   reworks it, and takes it in again, on one screen.
 
