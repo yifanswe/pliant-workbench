@@ -8,7 +8,19 @@ Pliant proposes infrastructure that lets users and their AI build a personal web
 
 This document records the design direction, not implemented guarantees. DSL syntax, engine integration, plugin isolation, and compatibility policy still require design and validation.
 
-**Current first demo:** let users define their own browser independently, quickly, and safely. Prove a real customization and recovery loop without a built-in agent. The AI-native sections below are future ideas to revisit, not prerequisites for this demo.
+**Scope change (2026-10-07):** Pliant is now one application that combines an **editor, a browser, and an agent** ([ADR 0002](docs/decisions/0002-editor-browser-agent-scope.md)). The browser-customization principles below remain valid and apply to the whole application. Statements that limit Pliant to a browser, require native UI without Electron everywhere, or defer the agent are superseded where this document marks them.
+
+**Delivered first demo:** users define their own browser layout independently, quickly, and safely, with a real customization and recovery loop and no built-in agent. That demo is complete history, not the current scope limit.
+
+## Editing and browsing in one application
+
+Browsing and editing are the two most important things people do with information. Browsers are for browsing, editors are for editing, and agent applications are for chat. The categories overlap, but each product starts from one activity and adds the other as a secondary feature.
+
+AI agents make it possible to move freely between browsing and editing the same information. Pliant's goal is the most efficient and comfortable browsing and editing experience for each user, in one application that grows with that user's needs.
+
+Confirmed structure: Chromium is the main base through the Pliant-owned embedder; the agent is a separate process that registers with the platform; editor version 1 reuses the VS Code core; the long-term editor is an independent, lighter implementation with good VS Code compatibility.
+
+Recommended, not decided: one Chromium runtime for browser and editor (no second Electron); protocol-level compatibility (LSP, DAP, themes, keybindings) with best-effort extension API support; and **one shared information-object model** across browse, edit, and agent views. Without a shared model, the product is three applications in one window.
 
 ## Change your own browser's behavior should not need a pull request and wait for approval
 
@@ -79,9 +91,9 @@ The DSL would describe layouts, observable state, local presentation models, and
 
 This distinction matters: arbitrary Swift code does not become safe because its UI uses SwiftUI. A declarative language is not a sandbox either. Runtime enforcement must make the boundaries real.
 
-Pliant will own its embedding layer over Chromium's Content API and selected components, targeting Linux, macOS, and Windows. We reuse Chromium's rendering, networking, storage, and process-security mechanisms, not its full browser application. This [decision](docs/decisions/0001-own-chromium-embedding.md) supersedes the CEF plan and makes us responsible for integration and upstream adaptation; it does not prove that direct embedding is inherently more malleable or safer. Pliant provides its own native UI without Electron. Start with one backend behind stable contracts rather than implementing multiple engines at once. The core language, DSL syntax, native UI framework, and plugin runtime remain open. Compatibility with Chrome/Firefox extensions is explicitly out of scope.
+Pliant will own its embedding layer over Chromium's Content API and selected components, targeting Linux, macOS, and Windows. We reuse Chromium's rendering, networking, storage, and process-security mechanisms, not its full browser application. This [decision](docs/decisions/0001-own-chromium-embedding.md) supersedes the CEF plan and makes us responsible for integration and upstream adaptation; it does not prove that direct embedding is inherently more malleable or safer. Electron is not the browser engine. The completed demo uses native UI; editor version 1 reuses VS Code's web-based workbench, and shell/editor hosting is open (ADR 0002). Start with one backend behind stable contracts rather than implementing multiple engines at once. The core language, DSL syntax, native UI framework, and plugin runtime remain open. Compatibility with Chrome/Firefox extensions is explicitly out of scope.
 
-Lightweight operation remains a goal, not a measured result. Building and distributing Chromium infrastructure has a cost; startup time, memory, and power consumption require real measurements. Removing an embedding framework does not automatically reduce those costs.
+Distribution size is not an early priority (approximately 0.8–1.2 GB is acceptable, ADR 0002). Runtime efficiency remains a goal, not a measured result. Building and distributing Chromium infrastructure has a cost; startup time, memory, and power consumption require real measurements. Removing an embedding framework does not automatically reduce those costs.
 
 ## Native customization, not extension compatibility
 
@@ -135,7 +147,7 @@ Stable contracts do not mean immutable implementation. They mean deliberate vers
 
 ## Agents are native participants, not only code authors
 
-**Future direction, deferred from the first customization demo.** Agent implementation, model/data policy, and external coding-agent collaboration are not current decisions or work items.
+**Status updated by ADR 0002.** The agent is now a confirmed part of the product, as a separate process that registers with the platform. It was deferred only from the completed customization demo. Its delivery order, transport, model/data policy, and coding-agent collaboration remain open. Recommended: design permissions, observability, and reversibility from the first agent design. The agent also works on edited information, not only on browsing.
 
 Pliant should ship a built-in agent service that improves everyday browsing and collaborates with the user's coding agent. Supporting an external agent connection is not enough. AI should participate in browser behavior, not merely add a chat box to the interface.
 
@@ -157,7 +169,7 @@ The intended loop is: use the browser, identify a need, clarify it together, imp
 
 ### Participate through native service contracts
 
-A runtime agent should run as a separate process and register with the platform through Mojo inter-process communication (IPC). The trusted platform admits the process, establishes its identity, and grants access to specific Pliant service interfaces. The agent can then call those services directly through typed Mojo interfaces, without driving the human's UI. It can also provide a service where the platform contract permits it.
+A runtime agent runs as a separate process and registers with the platform (confirmed). Mojo inter-process communication (IPC) is the candidate transport, not a decision. The trusted platform admits the process, establishes its identity, and grants access to specific Pliant service interfaces. The agent can then call those services directly through typed Mojo interfaces, without driving the human's UI. It can also provide a service where the platform contract permits it.
 
 Registration and service discovery do not grant unrestricted access. Services must enforce the agent's granted scope, including account and page boundaries, and support revocation. Mojo supplies communication, not Pliant's service registry, authorization policy, or a complete security boundary. Process separation alone does not replace sandboxing and permission enforcement.
 
@@ -208,7 +220,7 @@ The difficult questions are welcome: plugin composition, conflicts between polic
 
 Pliant builds on established ideas in extensible systems and [malleable software](https://www.inkandswitch.com/essay/malleable-software/). Its bet is applying them to the entire browser experience with AI as an everyday author, rather than reserving customization for extension developers.
 
-**The browser you use should be a design you can change, not a decision you have to live with.**
+**The application you edit and browse in should be a design you can change, not a decision you have to live with.**
 
 ---
 

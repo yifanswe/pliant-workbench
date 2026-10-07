@@ -4,11 +4,13 @@
 
 ## Goal and status
 
-Build infrastructure that lets users and their chosen coding agents create a personal browser. Deliver one or more ready-to-use browsers through the same public contracts.
+Build one application that combines an editor, a browser, and an agent ([ADR 0002](docs/decisions/0002-editor-browser-agent-scope.md)), on a customizable foundation. Users and their coding agents can change the interface and behavior. Ready-to-use defaults use the same public contracts.
+
+The stages below were written for the browser scope. They remain valid for the browser part. Editor and agent stages are not yet planned in detail; the next milestone is an open owner decision (see Open decisions).
 
 **Design principle: flexibility of customization with safety guards.**
 
-This is an implementation roadmap, not a record of completed browser work. The repository contains design documents, concept illustrations, a module-boundary scaffold, a pinned Chromium baseline, and active Rust/native embedder MVP source. Native runtime acceptance is separate from source availability or Rust type checking. The full browser platform, DSL, plugin runtime, and native agent integration remain future work.
+This is an implementation roadmap, not a record of completed browser work. The repository contains design documents, concept illustrations, a module-boundary scaffold, a pinned Chromium baseline, and active Rust/native embedder MVP source. Native runtime acceptance is separate from source availability or Rust type checking. The full browser platform, DSL, plugin runtime, editor, and agent process remain future work.
 
 The [repository layout](docs/repository-layout.md) now reflects the implemented
 source migration. The Rust host API is under `embedder/public/rust/`, the
@@ -16,9 +18,9 @@ canonical C ABI under `embedder/public/c/`, Chromium integration under
 `embedder/chromium/`, and executable compositions under `apps/`. This ownership
 change does not expand the current embedder MVP.
 
-## Current priority: a user-defined browser demo
+## Completed first milestone: a user-defined browser demo
 
-**The first product demo lets users define their own browser independently, quickly, and safely. It does not require an agent service.**
+**Delivered history.** The first product demo lets users define their own browser independently, quickly, and safely, without an agent service. The source is implemented; the full native acceptance checklist in `apps/browser/README.md` has not been recorded as passing. The "deferred agent" statements in this section apply to that demo only; ADR 0002 makes the agent part of the product.
 
 First finish the existing embedder MVP and its independent native test app. Then prove the customization loop on that real engine. A user edits a small local definition, previews a different interface and a bounded browser-behavior change, and explicitly applies or rejects it. The customization uses platform contracts rather than patches to core or Chromium.
 
@@ -40,12 +42,13 @@ The stages below describe the broader roadmap, not a requirement to finish every
 | --- | --- |
 | Desktop first | Target Linux, macOS, and Windows. Mobile is outside the current implementation scope. |
 | Own the Chromium embedder | Build on the Content API and selected supporting components, not CEF or the full Chromium browser application. Start with one backend behind Pliant contracts; see [ADR 0001](docs/decisions/0001-own-chromium-embedding.md). |
-| Native browser UI | Do not use Electron. The native rendering framework remains unselected. |
+| Browser engine, not Electron | Do not use Electron or CEF as the browser engine. The demo shell is native; editor version 1 reuses the VS Code core (web UI). Shell UI technology and editor hosting are open (ADR 0002). |
+| Editor, browser, agent | One application ([ADR 0002](docs/decisions/0002-editor-browser-agent-scope.md)). Agent is a separate process that registers with the platform. Editor version 1 reuses the VS Code core; long term, an independent editor with good VS Code compatibility. |
 | Complete customization | Support replacement of the whole UI and substantial browser services and policies, not just themes or fixed plugin slots. |
 | Stable core | Custom code uses public contracts. It cannot patch core implementation or bypass core invariants. |
 | No browser-extension compatibility | Do not implement Chrome/Firefox extension APIs or support installing their extension packages. This is an explicit non-goal, not deferred work. |
 | Native runtime and coding agents | Ship built-in browsing assistance and collaboration with the user's coding agent. Keep the implementation replaceable and support existing developer tools without requiring one fixed model. |
-| Lightweight operation | Measure distribution footprint, memory, startup, and idle activity separately. Do not reduce isolation to improve a headline metric. |
+| Resource use | Distribution size of approximately 0.8–1.2 GB is acceptable and is not an early priority. Measure distribution footprint, memory, startup, and idle activity separately. Do not reduce isolation to improve a headline metric. |
 
 The core language, native UI framework, DSL syntax, plugin execution technology, minimum OS versions, and supported CPU architectures remain open. The initial Content integration uses Chromium's C++ interfaces and platform glue as required; that does not choose the language of the portable core or a Rust/C++ boundary. Resolve remaining choices through the first feasibility stage.
 
@@ -366,7 +369,11 @@ Resolve these before the dependent work proceeds:
 | Plugin runtime | Enforceable grants, cancellation/resource limits, failure isolation, portability, and acceptable startup cost. |
 | Data and identity model | Persistent multi-profile behavior, engine storage constraints, and recoverable local customization state. |
 | Compatibility policy | Supported version windows, deterministic migrations, and explicit treatment of unavailable privileged services. |
-| Distribution and licensing | Chromium/component dependency obligations, project license, source-build capacity, signing/update ownership, and tested release targets. |
+| Next milestone (owner) | Minimal browse-and-edit fusion loop, or customizable browser first. Not decided. |
+| Editor hosting | VS Code workbench on Pliant's Chromium (recommended) versus a bundled Electron; extension API scope. |
+| Information-object model | Shared unit across browse, edit, and agent views, and its owner. |
+| Agent process | Transport, identity, permissions, observability, reversibility, model and data policy. |
+| Distribution and licensing | VS Code (Code - OSS) obligations, Chromium/component dependency obligations, project license, source-build capacity, signing/update ownership, and tested release targets. |
 
 Stop and revise the architecture if independent customization requires patching core internals, if profile isolation cannot be demonstrated, or if a failed plugin can bypass the recovery path.
 
@@ -374,11 +381,13 @@ A platform API gap is not permission to disable a security boundary. A missing t
 
 ## 7. What not to build yet
 
-Defer mobile, multiple engine backends, a public package marketplace, built-in model hosting, and full video replay. Do not implement Chrome/Firefox extension compatibility later by default; changing that non-goal requires a separate product decision.
+Defer mobile, multiple engine backends, a public package marketplace, built-in model hosting, full video replay, and size optimization. Do not implement Chrome/Firefox extension compatibility later by default; changing that non-goal requires a separate product decision.
 
 Do not attempt to copy all Arc or Neo features. One polished reference browser, a structurally different second preset, and a small set of meaningful service plugins are enough to test the thesis.
 
-## Completion criteria for the first public prototype
+## Completion criteria for the first public browser prototype
+
+These criteria cover the browser part. Editor and agent criteria are not yet defined.
 
 - [ ] A Pliant-owned Chromium Content embedder operates through Pliant contracts on Linux, macOS, and Windows.
 - [ ] Two distinct UI presets work without private core access.

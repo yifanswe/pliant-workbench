@@ -13,7 +13,7 @@ implemented migration covers `apps/`, `embedder/`, `ui/definition/`, preset
 definitions, and repository tooling without selecting a generic core language,
 UI toolkit, or plugin execution technology through directory naming.
 
-**Current delivery scope:** finish the embedder MVP, then demonstrate independent, quick, safe browser customization without an agent service. `services/agent/` and its collaboration interfaces are deferred design placeholders in this document, not directories or APIs to implement now. Build only the modules required by that customization loop.
+**Scope update (ADR 0002):** Pliant now combines an editor, a browser, and an agent. The embedder MVP and the agent-free customization demo are delivered. The agent is confirmed as a separate process; `services/agent/` below is its candidate home, not an existing directory. No editor location is chosen; editor version 1 reuses the VS Code core, and its directory and hosting are open. The next milestone is an open owner decision. Build only the modules a real feature needs.
 
 ## What Chromium's `services` means
 
@@ -180,7 +180,7 @@ incremental output remain outside this repository.
 
 **Migration acceptance:** independently build and run the test app through create/load A, load B, back, forward, close, and stale-ID rejection. Verify ordinary lifecycle handlers do not prevent close. Exercise the manual test controls through the same exported API. Record native rendering and helper startup separately from Rust type checking. A directory tree or a link check is not acceptance.
 
-**Later:** implement the smallest page/profile service bindings, then a deterministic out-of-process agent client. Prove authorization, direct calls, revocation, and isolation before adding a model-driven runtime. Instantiate other service directories only as those features are implemented.
+**Later (order open, see ADR 0002):** implement the smallest page/profile service bindings, then a deterministic out-of-process agent client. Prove authorization, direct calls, revocation, and isolation before adding a model-driven runtime. Instantiate other service directories only as those features are implemented.
 
 This layout changes ownership and organization, not the current MVP feature
 budget. It does not imply dependency installation or publication.

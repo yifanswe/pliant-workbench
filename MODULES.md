@@ -10,6 +10,10 @@ The [repository layout](docs/repository-layout.md) also records planned core,
 service, plugin, and platform boundaries. Directories are added only when a
 real feature needs them.
 
+Scope note: Pliant now combines an editor, a browser, and an agent
+([ADR 0002](docs/decisions/0002-editor-browser-agent-scope.md)). No editor or
+agent module exists yet. Their directories are added only with real features.
+
 ## Modules and allowed dependencies
 
 | Module | Owns | May depend on |
@@ -35,6 +39,12 @@ Dependencies point toward contracts and trusted mechanisms. Presets and plugins
 must not access Chromium, platform internals, or core implementation details. Core
 must not depend on a preset, UI policy, reference plugin, or developer tool.
 Platform adapters must not choose browser-product policy.
+
+## Planned editor and agent modules
+
+Not created. Editor version 1 reuses the VS Code core; the agent is a separate
+process that registers with the platform and uses granted service contracts. Their
+owners, dependency rules, and the shared information-object model are open.
 
 ## Planned browser outputs
 

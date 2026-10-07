@@ -1,5 +1,9 @@
 # Native customization demo
 
+This is the completed first milestone of Pliant. It predates the
+[editor, browser, and agent scope](../../docs/decisions/0002-editor-browser-agent-scope.md)
+and contains no editor or agent.
+
 This macOS app composes the `pliant-embedder` trusted-host API with
 `pliant-ui-definition`. The AppKit renderer walks the typed `Node` tree; it
 does not branch on preset names. The fixed path, Preview, Apply, Reject, and
