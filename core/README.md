@@ -15,8 +15,9 @@
 reference plugin, UI implementation, developer tool, or Chromium internal type.
 
 **Scope:** with [ADR 0002](../docs/decisions/0002-editor-browser-agent-scope.md), core
-mechanisms also serve editor and agent participants. A shared information-object
-model may belong here or in a service; that is open.
+mechanisms also serve editor and agent participants. The
+[information-object draft](../docs/design/information-objects.md) places the
+object store (local SQLite) in core; it awaits owner review.
 
 **Status:** scaffold only; no data model or operation API is frozen. See the
 [module map](../MODULES.md).

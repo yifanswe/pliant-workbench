@@ -92,9 +92,10 @@ customization demo.
 | Object store, revisions, anchors, links, change log | `core` (small, trusted) |
 | Web capture (DOM → object, anchor resolve) | browser service over the embedder |
 | File sync | editor service |
-| Agent reads and proposals | agent process over Mojo, with granted permissions |
+| Agent reads and proposals | built-in agent over internal Mojo; external agent over MCP; both with granted permissions |
 
-Storage for version 1: one local SQLite database. No sync, no cloud.
+Storage for version 1 (decided): one local SQLite database. Files on disk remain
+the source of truth. No sync, no cloud.
 
 ## Minimal browse-and-edit loop (milestone fit)
 

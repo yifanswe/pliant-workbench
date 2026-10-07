@@ -13,7 +13,7 @@ implemented migration covers `apps/`, `embedder/`, `ui/definition/`, preset
 definitions, and repository tooling without selecting a generic core language,
 UI toolkit, or plugin execution technology through directory naming.
 
-**Scope update (ADR 0002):** Pliant now combines an editor, a browser, and an agent. The embedder MVP and the agent-free customization demo are delivered. The agent is confirmed as a separate process; `services/agent/` below is its candidate home, not an existing directory. No editor location is chosen; editor version 1 reuses the VS Code core, and its directory and hosting are open. The next milestone is an open owner decision. Build only the modules a real feature needs.
+**Scope ([ADR 0002](decisions/0002-editor-browser-agent-scope.md)):** Pliant is an editor, a browser, and an agent, built from [four modules](design/modules-vision.md). The embedder MVP and the customization demo are delivered. The built-in agent runs as a separate process on internal Mojo IPC; `services/agent/` below is its candidate home, not an existing directory. External agents use an MCP server; the built-in agent reaches them through A2A, one way. No editor location is chosen; editor version 1 reuses the VS Code core and its hosting is open. The next milestone is a minimal browse + edit loop. Build only the modules a real feature needs.
 
 ## What Chromium's `services` means
 
@@ -92,11 +92,11 @@ The service implementation and its process entry point can remain in one service
 
 ## Two responsibilities of the built-in agent
 
-The built-in agent serves everyday browsing and interactive browser customization. It is not only a process that accepts user tasks.
+The built-in agent serves everyday browsing, editing, and interactive customization. It is not only a process that accepts user tasks.
 
 For everyday browsing, it consumes authorized content and behavior signals and supplies recommendations, predictions, or other assistance. Browser services can request that assistance or receive scoped suggestions. Keep context handling, assistance policies, and model orchestration inside the replaceable agent implementation. Do not make every page operation depend on synchronous inference.
 
-For customization, it helps the user clarify a goal and exchanges questions, approved context, and preview feedback with the user's coding agent. The coding agent edits through `tools/` and the customization contracts. The built-in agent does not need unrestricted source-writing authority to support this dialogue. External coding agents may need a versioned adapter to the native contract; requiring them to embed Mojo directly is not a settled requirement.
+For customization, it helps the user clarify a goal and exchanges questions, approved context, and preview feedback with the user's external agent through A2A. The external agent acts in Pliant through MCP and edits through `tools/` and the customization contracts. External agents never use Mojo directly. The built-in agent does not need unrestricted source-writing authority.
 
 These can begin as modules inside `services/agent/impl/`, not separate services or processes. Its `public/` contracts cover assistance and collaboration as well as lifecycle control. Introduce concrete interfaces only with a real scenario.
 
@@ -122,7 +122,7 @@ Public bindings must not depend on a service's private implementation. Another i
 
 Here, `public/` describes an import boundary, not unrestricted authority. The embedder API is for trusted hosts. A plugin or agent gets only the service interfaces and target scope that the platform grants.
 
-Mojo is the intended process transport. This does not prove that every intended agent language has a usable binding in our selected build. Verify bindings, bootstrap, compatibility, and revocation with a small client before committing to a language-specific SDK. Pliant interfaces must not expose arbitrary Chromium-internal Mojo endpoints.
+Mojo is the internal process transport; MCP is the external agent interface. Mojo does not prove that every intended agent language has a usable binding in our selected build. Verify bindings, bootstrap, compatibility, and revocation with a small client before committing to a language-specific SDK. Pliant interfaces must not expose arbitrary Chromium-internal Mojo endpoints.
 
 ## Dependency direction
 
@@ -143,15 +143,15 @@ Authorization need not turn core into a proxy for every message. Core grants a s
 
 Keep engine events and platform operations distinct. An embedder navigation event is not proof that an agent task succeeded or that a remote write was reversed.
 
-## One native-agent request
+## One built-in agent request
 
-The trusted host admits an agent process and establishes its identity over a controlled Mojo bootstrap. Hosting then grants a page-service binding restricted to an authorized profile and page set.
+The trusted host admits the built-in agent process and establishes its identity over a controlled Mojo bootstrap. Hosting then grants a page-service binding restricted to an authorized profile and page set.
 
 The agent calls the page service directly. The page service checks the binding and current target lifetime, then uses the embedder API. Chromium performs the navigation. The page service reports the actual outcome through its contract.
 
 If access is revoked, subsequent unauthorized calls fail even on an existing pipe. Closing the agent process does not close the human's unrelated pages. Agent task planning and memory stay with the replaceable agent implementation; the embedder contains neither.
 
-This example defines ownership, not finalized Mojo methods or an implemented agent runtime.
+This example defines ownership, not finalized Mojo methods or an implemented agent runtime. An external agent's MCP call follows the same grant and enforcement path through an MCP server in the trusted host.
 
 ## Implemented migration
 
@@ -180,7 +180,7 @@ incremental output remain outside this repository.
 
 **Migration acceptance:** independently build and run the test app through create/load A, load B, back, forward, close, and stale-ID rejection. Verify ordinary lifecycle handlers do not prevent close. Exercise the manual test controls through the same exported API. Record native rendering and helper startup separately from Rust type checking. A directory tree or a link check is not acceptance.
 
-**Later (order open, see ADR 0002):** implement the smallest page/profile service bindings, then a deterministic out-of-process agent client. Prove authorization, direct calls, revocation, and isolation before adding a model-driven runtime. Instantiate other service directories only as those features are implemented.
+**Later (after the browse + edit milestone defines its needs):** implement the smallest page/profile service bindings, then a deterministic out-of-process agent client. Prove authorization, direct calls, revocation, and isolation before adding a model-driven runtime. Instantiate other service directories only as those features are implemented.
 
 This layout changes ownership and organization, not the current MVP feature
 budget. It does not imply dependency installation or publication.

@@ -4,25 +4,28 @@
 
 **Flexibility of customization with safety guards.**
 
-Pliant proposes infrastructure that lets users and their AI build a personal web browser. One or more ready-to-use browsers would offer convenient defaults and demonstrate the same public capabilities available to every user.
+Pliant is an editor, a browser, and an agent in one application ([ADR 0002](docs/decisions/0002-editor-browser-agent-scope.md)). It is designed for user customization from the start. Ready-to-use defaults use the same public capabilities available to every user.
 
-This document records the design direction, not implemented guarantees. DSL syntax, engine integration, plugin isolation, and compatibility policy still require design and validation.
+This document records design direction, not implemented guarantees. The four product modules and the agent model are defined in [modules-vision.md](docs/design/modules-vision.md). Open questions are listed only in ADR 0002.
 
-**Scope change (2026-10-07):** Pliant is now one application that combines an **editor, a browser, and an agent** ([ADR 0002](docs/decisions/0002-editor-browser-agent-scope.md)). The browser-customization principles below remain valid and apply to the whole application. Statements that limit Pliant to a browser, require native UI without Electron everywhere, or defer the agent are superseded where this document marks them.
-
-**Delivered first demo:** users define their own browser layout independently, quickly, and safely, with a real customization and recovery loop and no built-in agent. That demo is complete history, not the current scope limit.
+**Delivered history:** the first demo let users define their own browser layout with a real preview → Apply/Reject → restore loop. It had no agent by design; that limit applied to the demo only.
 
 ## Editing and browsing in one application
 
-Browsing and editing are the two most important things people do with information. Browsers are for browsing, editors are for editing, and agent applications are for chat. The categories overlap, but each product starts from one activity and adds the other as a secondary feature.
+Browsing and editing are the two most important things people do with information. Browsers are for browsing, editors are for editing, and agent applications are for chat. Each product starts from one activity and adds the other as a secondary feature.
 
-AI agents make it possible to move freely between browsing and editing the same information. Pliant's goal is the most efficient and comfortable browsing and editing experience for each user, in one application that grows with that user's needs.
+AI agents give unlimited malleability between browsing and editing the same information. A user tells an AI the workflow they want; Pliant supplies the APIs, so the user never builds the data layer, IPC, or stability. One person's needs grow inside one application.
 
-Confirmed structure: Chromium is the main base through the Pliant-owned embedder; the agent is a separate process that registers with the platform; editor version 1 reuses the VS Code core; the long-term editor is an independent, lighter implementation with good VS Code compatibility.
+The four modules:
 
-Recommended, not decided: one Chromium runtime for browser and editor (no second Electron); protocol-level compatibility (LSP, DAP, themes, keybindings) with best-effort extension API support; and **one shared information-object model** across browse, edit, and agent views. Without a shared model, the product is three applications in one window.
+1. **UI customization DSL** for the browse, edit, and agent areas. Users compose workflows, not only appearance.
+2. **Browser layer:** embedder capabilities exposed as Pliant APIs.
+3. **Editor layer:** the main place where the user steers agents. Collaboration is not chat-only: the agent watches user activity and a co-owned scratch pad, and helps at the right time.
+4. **Agent layer:** a built-in agent on internal Mojo IPC; external agents use Pliant through MCP; the built-in agent asks the external agent for memory through A2A, one way.
 
-## Change your own browser's behavior should not need a pull request and wait for approval
+Editor version 1 reuses the VS Code core; the long-term editor is Pliant's own, with VS Code compatibility. Recommended, not decided: one shared information-object model across browse, edit, and agent areas ([draft](docs/design/information-objects.md)). Without it, the product is three applications in one window.
+
+## Changing your own application should not need a pull request
 
 You want an Arc-style workspace. Someone else wants a traditional tab bar. You want account-aware routing and a quiet background agent. Someone else wants a different password manager, download policy, or session workflow.
 
@@ -44,7 +47,7 @@ The platform has six responsibilities:
 | Profile and data management | Account isolation, passwords, passkeys, cookies, site storage, permissions, history, bookmarks, and session data, with extensible providers and policies. |
 | Plugin runtime | Service replacement, event hooks, permissions, resource limits, conflict handling, and failure isolation. |
 | Declarative UI engine | A concise language for complete interfaces, state bindings, and interactions, with desktop and mobile layout variants. |
-| Validation and developer tools | Comprehensive tests, documentation, types, isolated previews, and diagnostics for users and their chosen coding agents. |
+| Validation and developer tools | Comprehensive tests, documentation, types, isolated previews, and diagnostics for users and their AI agents. |
 | Upgrades and recovery | Customization packages, versioned contracts, compatibility, migrations, explicit activation, and rollback without requiring AI. |
 
 The developer tools connect the compiler, test suite, and preview environment. They do not require an embedded model or a separate AI-only API. Humans should be able to use the same tools.
@@ -91,7 +94,7 @@ The DSL would describe layouts, observable state, local presentation models, and
 
 This distinction matters: arbitrary Swift code does not become safe because its UI uses SwiftUI. A declarative language is not a sandbox either. Runtime enforcement must make the boundaries real.
 
-Pliant will own its embedding layer over Chromium's Content API and selected components, targeting Linux, macOS, and Windows. We reuse Chromium's rendering, networking, storage, and process-security mechanisms, not its full browser application. This [decision](docs/decisions/0001-own-chromium-embedding.md) supersedes the CEF plan and makes us responsible for integration and upstream adaptation; it does not prove that direct embedding is inherently more malleable or safer. Electron is not the browser engine. The completed demo uses native UI; editor version 1 reuses VS Code's web-based workbench, and shell/editor hosting is open (ADR 0002). Start with one backend behind stable contracts rather than implementing multiple engines at once. The core language, DSL syntax, native UI framework, and plugin runtime remain open. Compatibility with Chrome/Firefox extensions is explicitly out of scope.
+Pliant owns its embedding layer over Chromium's Content API and selected components. We reuse Chromium's rendering, networking, storage, and process-security mechanisms, not its full browser application. This [decision](docs/decisions/0001-own-chromium-embedding.md) makes us responsible for integration and upstream adaptation; it does not prove that direct embedding is more malleable or safer. Neither CEF nor Electron is used. The shell UI is native and AppKit-centered: the DSL layer translates definitions to native views and refreshes only the changed parts. Start with one engine backend behind stable contracts. DSL syntax and the plugin runtime are designed with their features. Chrome/Firefox extension compatibility is out of scope.
 
 Distribution size is not an early priority (approximately 0.8–1.2 GB is acceptable, ADR 0002). Runtime efficiency remains a goal, not a measured result. Building and distributing Chromium infrastructure has a cost; startup time, memory, and power consumption require real measurements. Removing an embedding framework does not automatically reduce those costs.
 
@@ -99,7 +102,7 @@ Distribution size is not an early priority (approximately 0.8–1.2 GB is accept
 
 Pliant will not implement the Chrome/Firefox extension compatibility layer or support installing their existing extension packages. This is a product boundary, not merely a lower-priority feature.
 
-Users and their local coding agents should implement changes through Pliant plugins, service providers, and declarative layouts. These may be created locally or reused and adapted from shared Pliant packages; users do not have to rebuild every tool from scratch.
+Users and their AI agents should implement changes through Pliant plugins, service providers, and declarative layouts. These may be created locally or reused and adapted from shared Pliant packages; users do not have to rebuild every tool from scratch.
 
 This removes the obligation to reproduce another browser's extension API, but it does not make every extension capability automatically available. Pliant must expose the necessary mechanisms through its own permissioned contracts. Missing capabilities belong in platform design discussions; local code cannot bypass the core to obtain them.
 
@@ -115,7 +118,7 @@ The DSL would declare layout variants and required capabilities. Each platform w
 
 Sharing a customization package is separate from syncing browsing data. Uploading layouts must not implicitly upload cookies, passwords, history, or account credentials. Package distribution, user-data synchronization, and per-device permissions need separate controls.
 
-Current implementation scope is Linux, macOS, and Windows. Mobile support is deferred; the examples above describe a future direction, not current delivery commitments.
+Current implementation scope is macOS first, with Linux and Windows later. Mobile support is deferred; the examples above describe a future direction, not current delivery commitments.
 
 ## Two promises the architecture has to earn
 
@@ -147,9 +150,9 @@ Stable contracts do not mean immutable implementation. They mean deliberate vers
 
 ## Agents are native participants, not only code authors
 
-**Status updated by ADR 0002.** The agent is now a confirmed part of the product, as a separate process that registers with the platform. It was deferred only from the completed customization demo. Its delivery order, transport, model/data policy, and coding-agent collaboration remain open. Recommended: design permissions, observability, and reversibility from the first agent design. The agent also works on edited information, not only on browsing.
+**Agent model ([ADR 0002](docs/decisions/0002-editor-browser-agent-scope.md)).** Pliant has a built-in agent that works on both browsed and edited information. It runs on internal Mojo IPC and is never exposed outside Pliant. The user's external agent uses Pliant capabilities through MCP. The built-in agent asks the external agent for memory and long-term context through A2A, one way; that memory is reused, never imported. MCP ships first; A2A follows. The built-in agent works without an external agent. Not implemented.
 
-Pliant should ship a built-in agent service that improves everyday browsing and collaborates with the user's coding agent. Supporting an external agent connection is not enough. AI should participate in browser behavior, not merely add a chat box to the interface.
+The built-in agent improves everyday browsing and editing and collaborates with the user's external agent. An external connection alone is not enough. AI should participate in application behavior, not merely add a chat box.
 
 ### Improve everyday browsing
 
@@ -163,21 +166,17 @@ Prediction is separate from execution. For example, the agent proposes preload c
 
 The built-in agent should help users express what they want to change, using authorized knowledge of their current browser and workflow. It should turn an incomplete request into a clearer goal through dialogue, not force users to write a complete implementation prompt themselves.
 
-The user's coding agent should be able to exchange questions, scoped context, proposed changes, and preview results with the built-in agent. The built-in agent contributes browser context and user feedback; the coding agent implements changes through the customization toolchain. Neither agent substitutes its own agreement for the user's authority.
+The user's external agent should be able to exchange questions, scoped context, proposed changes, and preview results with the built-in agent. The built-in agent contributes context and user feedback; the external agent can implement changes through the customization toolchain. Neither agent substitutes its own agreement for the user's authority.
 
-The intended loop is: use the browser, identify a need, clarify it together, implement a change, try it in a preview, refine it, and enable it. Relevant context is shared explicitly; collaboration does not grant the coding agent unrestricted browsing history or credentials. Activation and rollback remain platform operations, not model promises.
+The intended loop is: use the browser, identify a need, clarify it together, implement a change, try it in a preview, refine it, and enable it. Relevant context is shared explicitly; collaboration does not grant the external agent unrestricted browsing history or credentials. Activation and rollback remain platform operations, not model promises.
 
-### Participate through native service contracts
+### Participate through granted service contracts
 
-A runtime agent runs as a separate process and registers with the platform (confirmed). Mojo inter-process communication (IPC) is the candidate transport, not a decision. The trusted platform admits the process, establishes its identity, and grants access to specific Pliant service interfaces. The agent can then call those services directly through typed Mojo interfaces, without driving the human's UI. It can also provide a service where the platform contract permits it.
+Inside Pliant, the built-in agent runs as a separate process on Mojo IPC. The trusted platform admits it, establishes its identity, and grants specific Pliant service interfaces. It calls those services directly, without driving the human's UI. Mojo supplies communication only, not authorization or a complete security boundary.
 
-Registration and service discovery do not grant unrestricted access. Services must enforce the agent's granted scope, including account and page boundaries, and support revocation. Mojo supplies communication, not Pliant's service registry, authorization policy, or a complete security boundary. Process separation alone does not replace sandboxing and permission enforcement.
+Outside Pliant, external agents use an MCP server with the same authorization model. Neither path exposes Chromium-internal interfaces. Services enforce the granted scope, including account and page boundaries, and support revocation. Users can inspect agent activity and stop access without closing their own session.
 
-Agents should depend on versioned Pliant contracts, not arbitrary Chromium-internal Mojo interfaces. Direct service calls need not pass through a central agent controller, but they must preserve platform authorization and operation tracking. Users must be able to inspect agent activity and stop further access without closing their own browsing session.
-
-The built-in experience is a product responsibility, not a requirement to use one fixed model, agent implementation, or chat interface. Users should be able to replace or disable the agent. Ordinary browsing and previously generated customizations must continue to work without a running agent.
-
-This is a platform design direction, not an implemented capability or an addition to the initial embedder MVP.
+Users can disable the built-in agent or replace its model. Ordinary browsing, editing, and previously generated customizations must work without a running agent. This is design direction, not an implemented capability.
 
 ## Human and agent, at the same time
 

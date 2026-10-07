@@ -4,9 +4,9 @@
 
 ## Goal and status
 
-Build one application that combines an editor, a browser, and an agent ([ADR 0002](docs/decisions/0002-editor-browser-agent-scope.md)), on a customizable foundation. Users and their coding agents can change the interface and behavior. Ready-to-use defaults use the same public contracts.
+Build an editor, a browser, and an agent in one application ([ADR 0002](docs/decisions/0002-editor-browser-agent-scope.md)), from the [four modules](docs/design/modules-vision.md), on a customizable foundation. Ready-to-use defaults use the same public contracts as user customizations.
 
-The stages below were written for the browser scope. They remain valid for the browser part. Editor and agent stages are not yet planned in detail; the next milestone is an open owner decision (see Open decisions).
+**Next milestone: a minimal browse + edit loop** (see [Next milestone](#next-milestone-minimal-browse--edit-loop)). Stages 0–5 below were written for the browser part. They remain the browser-part roadmap; their order relative to editor and agent work follows the milestone.
 
 **Design principle: flexibility of customization with safety guards.**
 
@@ -18,39 +18,44 @@ canonical C ABI under `embedder/public/c/`, Chromium integration under
 `embedder/chromium/`, and executable compositions under `apps/`. This ownership
 change does not expand the current embedder MVP.
 
+## Next milestone: minimal browse + edit loop
+
+Scope, from the [information-object draft](docs/design/information-objects.md):
+
+1. The user selects text on a web page.
+2. Pliant records a web object and an anchor in the local SQLite store.
+3. The user sends the selection to a note or file in the edit area; a `derived_from` link is stored.
+4. Clicking the link opens the page and highlights the anchor.
+5. Optionally (open point in the draft), the built-in agent proposes a change that the user applies or rejects.
+
+Prerequisites still open: editor version 1 hosting and owner review of the draft ([ADR 0002](docs/decisions/0002-editor-browser-agent-scope.md#open-questions)). Detailed tasks are written after those decisions.
+
 ## Completed first milestone: a user-defined browser demo
 
-**Delivered history.** The first product demo lets users define their own browser independently, quickly, and safely, without an agent service. The source is implemented; the full native acceptance checklist in `apps/browser/README.md` has not been recorded as passing. The "deferred agent" statements in this section apply to that demo only; ADR 0002 makes the agent part of the product.
+**Delivered history.** The first demo lets users define their own browser layout independently, quickly, and safely. It had no agent by design; that limit applied to the demo only. The source is implemented; the full native acceptance checklist in `apps/browser/README.md` has not been recorded as passing.
 
-First finish the existing embedder MVP and its independent native test app. Then prove the customization loop on that real engine. A user edits a small local definition, previews a different interface and a bounded browser-behavior change, and explicitly applies or rejects it. The customization uses platform contracts rather than patches to core or Chromium.
+Acceptance scope, as delivered in source:
 
-The minimum acceptance scope is:
-
-- Two visibly different layouts over the same real browser capabilities, not merely a color/theme change.
-- One meaningful behavior change through a declared contract, without building a general-purpose plugin system first.
-- A short edit-to-preview loop that does not rebuild Chromium for a customization change.
-- Rejection of invalid definitions and unauthorized operations, plus a working way to restore the default experience.
-- Independent end-to-end execution of customization and ordinary browsing, not only schema tests or screenshots of static mockups.
-
-The user can author the definition directly or use their existing coding tools. Browser-native agent integration, predictive assistance, model/privacy/budget choices, and coding-agent-to-browser-agent collaboration are deferred. Do not ask for those choices or implement their scaffolding to unblock this demo. AI-native ideas remain a future direction to revisit, not an immediate delivery commitment.
-
-The stages below describe the broader roadmap, not a requirement to finish every stage before this demo. Take only the minimal UI, behavior, validation, and preview mechanisms needed for the acceptance scope above. Cross-platform hardening, generalized providers, and full upgrade compatibility remain later work; do not claim those guarantees from the demo.
+- Two visibly different layouts over the same real browser capabilities.
+- One meaningful behavior change through a declared contract.
+- An edit-to-preview loop that does not rebuild Chromium.
+- Rejection of invalid definitions and unauthorized operations, plus restore of the default.
+- End-to-end execution of customization and ordinary browsing.
 
 ## 1. Decisions and boundaries
 
 | Decided | Meaning |
 | --- | --- |
-| Desktop first | Target Linux, macOS, and Windows. Mobile is outside the current implementation scope. |
-| Own the Chromium embedder | Build on the Content API and selected supporting components, not CEF or the full Chromium browser application. Start with one backend behind Pliant contracts; see [ADR 0001](docs/decisions/0001-own-chromium-embedding.md). |
-| Browser engine, not Electron | Do not use Electron or CEF as the browser engine. The demo shell is native; editor version 1 reuses the VS Code core (web UI). Shell UI technology and editor hosting are open (ADR 0002). |
-| Editor, browser, agent | One application ([ADR 0002](docs/decisions/0002-editor-browser-agent-scope.md)). Agent is a separate process that registers with the platform. Editor version 1 reuses the VS Code core; long term, an independent editor with good VS Code compatibility. |
-| Complete customization | Support replacement of the whole UI and substantial browser services and policies, not just themes or fixed plugin slots. |
-| Stable core | Custom code uses public contracts. It cannot patch core implementation or bypass core invariants. |
-| No browser-extension compatibility | Do not implement Chrome/Firefox extension APIs or support installing their extension packages. This is an explicit non-goal, not deferred work. |
-| Native runtime and coding agents | Ship built-in browsing assistance and collaboration with the user's coding agent. Keep the implementation replaceable and support existing developer tools without requiring one fixed model. |
-| Resource use | Distribution size of approximately 0.8–1.2 GB is acceptable and is not an early priority. Measure distribution footprint, memory, startup, and idle activity separately. Do not reduce isolation to improve a headline metric. |
+| Product scope and owner decisions | See [ADR 0002](docs/decisions/0002-editor-browser-agent-scope.md#confirmed-structure). Not repeated here. |
+| Desktop, macOS first | Linux and Windows later. Mobile is outside the current scope. |
+| Own the Chromium embedder | Content API and selected components, not CEF, Electron, or the full Chromium browser application ([ADR 0001](docs/decisions/0001-own-chromium-embedding.md)). |
+| Native shell UI | AppKit-centered; no extra UI engine. |
+| Complete customization | Replace the whole UI and substantial services and policies, not just themes. |
+| Stable core | Custom code uses public contracts. It cannot patch core or bypass core invariants. |
+| No browser-extension compatibility | Do not implement Chrome/Firefox extension APIs. An explicit non-goal. |
+| Resource use | About 0.8–1.2 GB distribution size is acceptable. Measure memory, startup, and idle activity separately. Do not reduce isolation to improve a metric. |
 
-The core language, native UI framework, DSL syntax, plugin execution technology, minimum OS versions, and supported CPU architectures remain open. The initial Content integration uses Chromium's C++ interfaces and platform glue as required; that does not choose the language of the portable core or a Rust/C++ boundary. Resolve remaining choices through the first feasibility stage.
+DSL syntax, plugin execution technology, minimum OS versions, and supported CPU architectures are engineering choices made with their features. The initial Content integration uses Chromium's C++ interfaces and platform glue as required; that does not choose the language of the portable core or a Rust/C++ boundary. Resolve remaining choices through the first feasibility stage.
 
 ### What Arc and Neo contribute to the plan
 
@@ -108,7 +113,7 @@ Separate browser data from customization packages. A shared UI package must not 
 
 ### Stage 0: Build the Chromium embedder spike and choose the remaining stack
 
-**Question:** Can the selected integration support the product's hard requirements on all three desktop platforms?
+**Question:** Can the selected integration support the product's hard requirements, first on macOS?
 
 The [embedding decision](docs/decisions/0001-own-chromium-embedding.md), initial
 [capability requirements](docs/contracts/engine-capabilities.md), and
@@ -128,7 +133,7 @@ Work in this order:
 9. Compare native content-view hosting and offscreen composition only where needed. Record compositor, input, accessibility, and resource trade-offs.
 10. Select the core language, native renderer, any Rust/C++ boundary, and candidate plugin isolation approach from this evidence.
 
-A spike can begin on one development machine. The stage is not complete until the hard-boundary checks have run on Linux, macOS, and Windows. Linux display-server variants and CPU coverage must be recorded explicitly.
+The stage completes on macOS first. Linux and Windows checks follow when those platforms start. Linux display-server variants and CPU coverage must be recorded explicitly.
 
 **Build capacity:** source acquisition and compilation need a deliberately
 provisioned workspace and matching upstream dependencies/toolchains. A source
@@ -211,7 +216,7 @@ Implement:
 - Pause, cancellation, inspection, and handoff to the human.
 - Per-page and per-task cleanup with exact ownership tracking.
 
-Start with a deterministic out-of-process test client over the intended Mojo contract. Then integrate the built-in agent implementation; keep external coding-agent collaboration in Stage 4. Do not use model success as the only correctness test. Validate interface semantics, process bootstrap, and language bindings separately.
+Start with a deterministic out-of-process test client over the internal Mojo interface. Then integrate the built-in agent. External agents connect through MCP (first) and are reached through A2A (later); see [modules-vision.md](docs/design/modules-vision.md). Do not use model success as the only correctness test. Validate interface semantics, process bootstrap, and language bindings separately.
 
 For the selected everyday-assistance scenario, compare the outcome against a non-agent baseline. Measure usefulness and wasted work, including latency, network activity, and resource use. Do not count displaying a suggestion or issuing a preload request as proof of improvement. Slow or unavailable inference must not block ordinary browsing.
 
@@ -228,13 +233,13 @@ Permission and credential dialogs may require human interaction. Route these int
 
 Separate tabs do not isolate a remote cart or draft. Define coordination for shared external objects where possible and require confirmation for sensitive writes. Do not promise exactly-once remote effects or rollback of actions already accepted by a website.
 
-**Gate:** execute the scenario on all supported desktop platforms. Record active page/window identities and actual focus behavior, not only successful protocol responses. A webpage cannot grant capabilities through instructions embedded in its content.
+**Gate:** execute the scenario on each supported desktop platform (macOS first). Record active page/window identities and actual focus behavior, not only successful protocol responses. A webpage cannot grant capabilities through instructions embedded in its content.
 
 **Deferred:** full session video recording and replay. Reliable action history, page attribution, and task lifecycle come first.
 
 ### Stage 4: Deliver the local customization development loop
 
-**Question:** Can a user's own coding agent build and debug a customization without a maintainer's help?
+**Question:** Can a user's own external agent build and debug a customization without a maintainer's help?
 
 Connect the existing compiler, tests, runtime, and preview into a small toolchain under `tools/`.
 
@@ -256,11 +261,11 @@ A package manifest should identify its format version, entry points, required ca
 
 Do not give every preview real account access. Grant access explicitly for tests that require it. A preview should not accidentally execute a live payment or send a message.
 
-**Gate:** two independent coding agents complete a UI change and a behavior-plugin change using the public documentation and toolchain. Review the resulting diffs and run the same platform tests. A human can use the complete loop without AI.
+**Gate:** two independent external agents complete a UI change and a behavior-plugin change using the public documentation and toolchain. Review the resulting diffs and run the same platform tests. A human can use the complete loop without AI.
 
-The built-in agent and the user's coding agent must support a bidirectional customization loop: clarify the user's goal, exchange scoped browser context and questions, implement a proposal, inspect the preview, and refine it from user feedback. Test that collaboration end to end, including denied context access and a rejected change. A one-way prompt export is not sufficient.
+The built-in agent and the user's external agent must support a customization loop: clarify the user's goal, exchange scoped browser context and questions, implement a proposal, inspect the preview, and refine it from user feedback. Test that collaboration end to end, including denied context access and a rejected change. A one-way prompt export is not sufficient.
 
-Use documented, permissioned collaboration interfaces. An adapter can connect an existing coding agent to the native service contract; its transport remains to be validated. Do not require a hosted generation service or one embedded model. Ordinary developer commands remain usable without an agent.
+Use documented, permissioned interfaces: MCP for the external agent, A2A one-way from the built-in agent. Do not require a hosted generation service or one embedded model. Ordinary developer commands remain usable without an agent.
 
 ### Stage 5: Prove upgrades and recovery
 
@@ -360,20 +365,16 @@ Implementation, test design, and independent review should have different owners
 
 ## 6. Open decisions and stop conditions
 
-Resolve these before the dependent work proceeds:
+Open product questions are listed only in [ADR 0002](docs/decisions/0002-editor-browser-agent-scope.md#open-questions). Engineering choices still need evidence:
 
-| Decision | Evidence needed |
+| Choice | Evidence needed |
 | --- | --- |
-| Native UI framework | Content-view embedding, full layout replacement, accessibility, input methods, platform reach, and measured overhead. |
-| UI language design | Both reference presets can be expressed without internal patches or unrestricted host-code escape hatches. |
-| Plugin runtime | Enforceable grants, cancellation/resource limits, failure isolation, portability, and acceptable startup cost. |
-| Data and identity model | Persistent multi-profile behavior, engine storage constraints, and recoverable local customization state. |
-| Compatibility policy | Supported version windows, deterministic migrations, and explicit treatment of unavailable privileged services. |
-| Next milestone (owner) | Minimal browse-and-edit fusion loop, or customizable browser first. Not decided. |
-| Editor hosting | VS Code workbench on Pliant's Chromium (recommended) versus a bundled Electron; extension API scope. |
-| Information-object model | Shared unit across browse, edit, and agent views, and its owner. |
-| Agent process | Transport, identity, permissions, observability, reversibility, model and data policy. |
-| Distribution and licensing | VS Code (Code - OSS) obligations, Chromium/component dependency obligations, project license, source-build capacity, signing/update ownership, and tested release targets. |
+| UI language design | Both reference presets and the reference scratch-pad workflow can be expressed without internal patches or unrestricted host-code escape hatches. |
+| Plugin runtime | Enforceable grants, cancellation/resource limits, failure isolation, and acceptable startup cost. |
+| Code-execution sandbox | File, network, and process limits for the editor's execution environment. |
+| Agent permissions | MCP scopes, activity-stream scopes, revocation, observability, and reversibility. |
+| Compatibility policy | Supported version windows, deterministic migrations, and treatment of unavailable privileged services. |
+| Distribution | VS Code (Code - OSS) and Chromium obligations under Apache-2.0, signing, and update ownership. |
 
 Stop and revise the architecture if independent customization requires patching core internals, if profile isolation cannot be demonstrated, or if a failed plugin can bypass the recovery path.
 
@@ -387,13 +388,13 @@ Do not attempt to copy all Arc or Neo features. One polished reference browser, 
 
 ## Completion criteria for the first public browser prototype
 
-These criteria cover the browser part. Editor and agent criteria are not yet defined.
+These criteria cover the browser part. Editor and agent criteria follow the browse + edit milestone.
 
-- [ ] A Pliant-owned Chromium Content embedder operates through Pliant contracts on Linux, macOS, and Windows.
+- [ ] A Pliant-owned Chromium Content embedder operates through Pliant contracts on macOS (Linux and Windows later).
 - [ ] Two distinct UI presets work without private core access.
 - [ ] A user can replace one meaningful behavior service through the plugin contract.
 - [ ] A human-agent background scenario passes with verified profile and focus behavior.
-- [ ] A local coding agent can use the public write/test/preview/revise workflow.
+- [ ] An external agent can use the public write/test/preview/revise workflow.
 - [ ] Runtime guards reject unauthorized actions and bound plugin failures.
 - [ ] A compatible old package survives a real foundation upgrade without AI.
 - [ ] Recovery preserves user data and does not silently replace privileged policies.

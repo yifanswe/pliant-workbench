@@ -19,8 +19,10 @@ The MVP uses one disposable context and does not implement or qualify the
 broader design below. The CEF plan is superseded by
 [ADR 0001](../docs/decisions/0001-own-chromium-embedding.md). Under
 [ADR 0002](../docs/decisions/0002-editor-browser-agent-scope.md), this embedder
-remains the Chromium base for the whole application; it is recommended (not
-decided) that the editor also runs on it instead of a second Electron runtime.
+remains the Chromium base for the whole application and implements the
+browser layer of the [four modules](../docs/design/modules-vision.md). Its
+capabilities become Pliant APIs for the built-in agent and, through MCP, for
+external agents. Editor hosting is open.
 
 The [first-version design](DESIGN.md) specifies the CEF-inspired object model,
 proposed engine API, scoped decisions, native hosting, and lifecycle semantics

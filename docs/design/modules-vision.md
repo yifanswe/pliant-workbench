@@ -1,6 +1,7 @@
 # Pliant modules: owner vision (2026-10-07)
 
-**Status:** owner direction, recorded for design. Not implemented.
+**Status:** owner direction, recorded for design. Not implemented. This is the
+source of truth for the four-module structure and the agent model.
 
 Pliant has four modules. The core principle: Pliant is designed from the start
 to support user customization. Users do not build the data layer, IPC or
@@ -25,8 +26,8 @@ not only change appearance.
 
 ## 2. Browser layer
 
-Implement the browser capability modules (see the Chromium embedder callback
-audit sheet) in the embedder. Expose them as Pliant APIs. A local, authorized
+Implement the browser capability modules in the Pliant-owned embedder over
+Chromium Content (see [engine capabilities](../contracts/engine-capabilities.md)). Expose them as Pliant APIs. A local, authorized
 agent calls these APIs to browse together with the user and to connect
 browsing with the editor, the custom UI and the agent.
 
@@ -77,8 +78,8 @@ Roles:
 ## Design notes (assistant, for review)
 
 1. **MCP and A2A outside, Mojo inside.** Mojo stays the IPC between Pliant
-   processes, including the built-in agent process. This replaces "the agent
-   process registers over Mojo" as the external contract in ADR 0002.
+   processes, including the built-in agent process. It is never an external
+   contract ([ADR 0002](../decisions/0002-editor-browser-agent-scope.md)).
    A2A adoption is still early; MCP ships first and A2A follows.
 2. **Push, not only pull.** "The agent watches the user" needs events from
    Pliant to the agent. MCP has resource subscriptions and notifications, but
@@ -88,5 +89,5 @@ Roles:
    "(to be found)" replacement use actor-tagged, revertible Changes from
    [information-objects.md](information-objects.md). The placeholder can be a
    "hole" anchor that the agent fills with a proposed Change.
-4. **Code execution needs a sandbox.** Define its file, network and process
-   limits before the first version.
+4. **Code execution needs a sandbox.** The sandbox technology is not chosen.
+   Define its file, network and process limits before the first version.

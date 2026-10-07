@@ -10,9 +10,10 @@ The [repository layout](docs/repository-layout.md) also records planned core,
 service, plugin, and platform boundaries. Directories are added only when a
 real feature needs them.
 
-Scope note: Pliant now combines an editor, a browser, and an agent
-([ADR 0002](docs/decisions/0002-editor-browser-agent-scope.md)). No editor or
-agent module exists yet. Their directories are added only with real features.
+Scope: Pliant is an editor, a browser, and an agent
+([ADR 0002](docs/decisions/0002-editor-browser-agent-scope.md)), built from four
+product modules ([modules-vision.md](docs/design/modules-vision.md)). The table
+below maps source ownership, not the product modules.
 
 ## Modules and allowed dependencies
 
@@ -40,11 +41,18 @@ must not access Chromium, platform internals, or core implementation details. Co
 must not depend on a preset, UI policy, reference plugin, or developer tool.
 Platform adapters must not choose browser-product policy.
 
-## Planned editor and agent modules
+## Product modules and their status
 
-Not created. Editor version 1 reuses the VS Code core; the agent is a separate
-process that registers with the platform and uses granted service contracts. Their
-owners, dependency rules, and the shared information-object model are open.
+| Product module | Current source | Status |
+| --- | --- | --- |
+| UI customization DSL (browse, edit, agent areas) | `ui/definition/`, `presets/`, AppKit renderer in `apps/browser/` | Bounded JSON demo only; no general DSL |
+| Browser layer | `embedder/` | macOS arm64 MVP; Pliant APIs not yet exposed beyond the trusted host |
+| Editor layer | none | Planned; version 1 reuses the VS Code core; hosting open |
+| Agent layer | none | Planned: built-in agent (internal Mojo), MCP for external agents, A2A one-way outward |
+
+Editor and agent directories are added only with real features. The
+information-object store is a [draft](docs/design/information-objects.md)
+(local SQLite).
 
 ## Planned browser outputs
 
