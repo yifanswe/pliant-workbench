@@ -1,53 +1,65 @@
 # Pliant
 
-**An editor, a browser, and an agent in one application.**
+**Browse, edit, and work with your agent in one application.**
 
-[Design philosophy](DESIGN_PHILOSOPHY.md) · [Four modules](docs/design/modules-vision.md) · [Implementation plan](IMPLEMENTATION_PLAN.md) · [Module map](MODULES.md) · [Discuss an idea](https://github.com/yifanswe/pliant-browser/issues)
+[Four modules](docs/design/modules-vision.md) · [Design philosophy](DESIGN_PHILOSOPHY.md) · [Decisions](docs/decisions/0002-editor-browser-agent-scope.md) · [Implementation plan](IMPLEMENTATION_PLAN.md) · [Module map](MODULES.md) · [Discuss an idea](https://github.com/yifanswe/pliant-browser/issues)
 
-![Pliant: one foundation, your browser on every device. Concept illustration.](assets/hero.png)
+![Pliant concept: a web page and a shared scratch pad side by side. Selected text goes to the scratch pad, the agent fills a placeholder and proposes a change for the user to apply or reject.](assets/hero.png)
 
-Pliant is a new kind of application. Browsing and editing are the two most important things people do with information. Today they live in separate applications, and agent chat lives in a third. In Pliant, AI agents give unlimited malleability between browsing and editing the same information. One person's needs grow inside one application, without switches between applications. See [ADR 0002](docs/decisions/0002-editor-browser-agent-scope.md).
+## Why
 
-Pliant is designed for user customization from the start. A user tells an AI the workflow they want. The AI builds it on Pliant APIs. The user never builds the data layer, inter-process communication, or stability.
+Browsing and editing are the two main things people do with information. Today they happen in different applications: a browser to read, an editor to write, and a chat window to talk to an agent. Users copy content between them all day.
 
-## Four modules
+Pliant puts all three in one application, and it is a new kind of application. You select a paragraph on a page, and it opens in a scratch pad next to the page. You keep typing; you do not @mention anyone or press a button. Your agent watches the scratch pad and helps. It fills a link you forgot, answers a question, or proposes a change. Nothing changes until you apply it.
 
-The [module vision](docs/design/modules-vision.md) is the source of truth. In short:
+Everyone works differently, so Pliant does not ship one fixed workflow. You tell your AI the workflow you want, and it builds that workflow on Pliant APIs. Pliant provides the data layer, the process communication, and the stability. One person's needs grow inside one application.
 
-1. **UI customization (DSL).** One definition language for the browse area, the edit area, and the agent area. Reference example: select web text, right-click, and an agent area or scratch pad opens with the text copied.
-2. **Browser layer.** Browser capabilities implemented in the Pliant-owned embedder over Chromium Content ([ADR 0001](docs/decisions/0001-own-chromium-embedding.md)) and exposed as Pliant APIs.
-3. **Editor layer.** The main place where the user steers agents. The agent watches user activity and a co-owned scratch pad, and helps without a chat prompt.
-4. **Agent layer.** A built-in agent, internal only (Mojo IPC). Pliant exposes its capabilities to the user's external agent through MCP. The built-in agent asks the external agent for memory through A2A, one way. MCP ships first; A2A follows.
+## How it fits together
+
+![Pliant architecture: a UI customization DSL on top of the browser layer, editor layer, and built-in agent; information objects, a trusted core, and the Chromium embedder below; the user's own agent connects through MCP and A2A.](assets/architecture.png)
+
+| Module | What it does |
+| --- | --- |
+| 1. UI customization (DSL) | One definition language for the browse area, the edit area, the agent area, and the triggers between them. AppKit renders it and refreshes only what changed. |
+| 2. Browser layer | Browser capabilities in the Pliant-owned embedder over Chromium Content, exposed as Pliant APIs. |
+| 3. Editor layer | The main place where you steer agents. Scratch pads are shared by you and the agent. |
+| 4. Agent layer | A built-in agent inside Pliant. Your own agent uses Pliant through MCP. The built-in agent asks your agent for memory through A2A, one way. Your agent's memory is never imported. |
+
+All four modules share one [information-object model](docs/design/information-objects.md): pages, files, notes, and agent results are objects with anchors, links, and revertible changes. See the [module vision](docs/design/modules-vision.md) for the full design.
 
 ## Status
 
-Implemented: a macOS arm64 vertical slice. It contains a Pliant-owned Chromium Content embedder, its Rust trusted-host API, an independent API test app, a bounded JSON UI-definition crate, two distinct definitions, and a native customization-demo browser with preview, Apply, Reject, and restore. Chromium source, dependencies, and build outputs stay in a separately provisioned workspace at the pinned revision.
+Pliant is early. Most of the design above is **not implemented yet**.
 
-Not implemented: the editor, the agents, MCP/A2A, the information-object model, the general DSL, plugins, Linux, and Windows. See the [module map](MODULES.md).
+**Done:** a macOS arm64 vertical slice. It has a Pliant-owned Chromium Content embedder, its Rust host API, an API test app, a JSON UI-definition crate with two definitions, and a native demo browser. The demo lets a user change the browser layout with preview → Apply / Reject → restore.
 
-**Next milestone:** a minimal browse + edit loop.
+**Not done:** the editor, the agents, MCP and A2A, the information-object model, the general DSL, plugins, Linux, and Windows.
+
+**Next milestone:** a minimal browse + edit loop. Select text on a page, send it to a note, then jump from the note back to the highlighted text.
 
 ## Key decisions
 
 | Topic | Decision |
 | --- | --- |
-| Engine | Pliant-owned embedder over Chromium Content. Not CEF or Electron. |
-| Shell UI | AppKit plus own DSL; no SwiftUI. No Electron or other extra UI engine. The DSL layer translates definitions to native views with diff-based partial refresh. |
-| Editor | Version 1 reuses the VS Code core. Long term: an own editor with VS Code compatibility. VS Code extensions are out of scope for version 1. |
-| Agents | Built-in agent (internal, Mojo). External agent → Pliant through MCP. Built-in → external agent through A2A, one way. The built-in agent works without an external agent. |
-| Data | Local SQLite database. Files on disk remain the source of truth. |
-| Platform | macOS first. Linux and Windows later. Mobile deferred. |
+| Engine | Pliant-owned embedder over Chromium Content. Not CEF, not Electron. |
+| Shell UI | AppKit plus Pliant's own DSL. No SwiftUI and no other UI engine. |
+| Editor | Version 1 reuses the VS Code core. Later: Pliant's own editor, compatible with VS Code. No VS Code extensions in version 1. |
+| Agents | Built-in agent on internal Mojo IPC. Your agent → Pliant through MCP. Built-in agent → your agent through A2A, one way. MCP first. |
+| Data | Local SQLite database. Files on disk stay the source of truth. |
+| Platform | macOS first. Linux and Windows later. |
 | Size | About 0.8–1.2 GB is acceptable. |
 | License | Apache-2.0. |
 
-Open questions: editor version 1 hosting; owner review of the [information-object draft](docs/design/information-objects.md). The [ADR 0002](docs/decisions/0002-editor-browser-agent-scope.md) list is authoritative.
+Open questions are listed only in [ADR 0002](docs/decisions/0002-editor-browser-agent-scope.md#open-questions).
 
-## Customization with safety guards
+## Safety
 
-There is no Chrome/Firefox extension compatibility, by design. Users customize Pliant through its own DSL, APIs, and plugins, directly or with an AI. Personal choices do not need an upstream pull request.
+Users change a lot in Pliant, so the core keeps firm limits. Every change, by the user or by an agent, goes through preview → Apply / Reject → restore. Agents propose changes; the user applies them. Pliant does not support Chrome or Firefox extensions; customization goes through its own DSL and APIs.
 
-The core enforces safety boundaries while users change their experience. Every change goes through preview → Apply/Reject → restore. Infrastructure upgrades remain possible with or without AI.
+## Build
+
+Chromium build steps are in [embedder/chromium/BUILDING.md](embedder/chromium/BUILDING.md). The demo browser is described in [apps/browser/README.md](apps/browser/README.md).
 
 ---
 
-Concept by [Yifan Li](https://github.com/yifanswe). Licensed under [Apache-2.0](LICENSE).
+Concept by [Yifan Li](https://github.com/yifanswe). Licensed under [Apache-2.0](LICENSE). Images are concept illustrations rendered by [`tools/render_assets.py`](tools/render_assets.py), not product screenshots.
