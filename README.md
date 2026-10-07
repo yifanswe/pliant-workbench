@@ -32,7 +32,7 @@ Not implemented: the editor, the agents, MCP/A2A, the information-object model, 
 | Topic | Decision |
 | --- | --- |
 | Engine | Pliant-owned embedder over Chromium Content. Not CEF or Electron. |
-| Shell UI | Native, AppKit-centered. No Electron or other extra UI engine. The DSL layer translates definitions to native views with diff-based partial refresh. |
+| Shell UI | AppKit plus own DSL; no SwiftUI. No Electron or other extra UI engine. The DSL layer translates definitions to native views with diff-based partial refresh. |
 | Editor | Version 1 reuses the VS Code core. Long term: an own editor with VS Code compatibility. VS Code extensions are out of scope for version 1. |
 | Agents | Built-in agent (internal, Mojo). External agent → Pliant through MCP. Built-in → external agent through A2A, one way. The built-in agent works without an external agent. |
 | Data | Local SQLite database. Files on disk remain the source of truth. |
@@ -40,7 +40,7 @@ Not implemented: the editor, the agents, MCP/A2A, the information-object model, 
 | Size | About 0.8–1.2 GB is acceptable. |
 | License | Apache-2.0. |
 
-Open questions: editor version 1 hosting; the AppKit/SwiftUI split; owner review of the [information-object draft](docs/design/information-objects.md). The [ADR 0002](docs/decisions/0002-editor-browser-agent-scope.md) list is authoritative.
+Open questions: editor version 1 hosting; owner review of the [information-object draft](docs/design/information-objects.md). The [ADR 0002](docs/decisions/0002-editor-browser-agent-scope.md) list is authoritative.
 
 ## Customization with safety guards
 

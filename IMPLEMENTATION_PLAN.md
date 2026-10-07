@@ -49,7 +49,7 @@ Acceptance scope, as delivered in source:
 | Product scope and owner decisions | See [ADR 0002](docs/decisions/0002-editor-browser-agent-scope.md#confirmed-structure). Not repeated here. |
 | Desktop, macOS first | Linux and Windows later. Mobile is outside the current scope. |
 | Own the Chromium embedder | Content API and selected components, not CEF, Electron, or the full Chromium browser application ([ADR 0001](docs/decisions/0001-own-chromium-embedding.md)). |
-| Native shell UI | AppKit-centered; no extra UI engine. |
+| Native shell UI | AppKit plus own DSL; no SwiftUI or extra UI engine. |
 | Complete customization | Replace the whole UI and substantial services and policies, not just themes. |
 | Stable core | Custom code uses public contracts. It cannot patch core or bypass core invariants. |
 | No browser-extension compatibility | Do not implement Chrome/Firefox extension APIs. An explicit non-goal. |

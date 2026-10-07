@@ -6,7 +6,7 @@
 
 adaptive
 
-Desktop: macOS first; Linux and Windows later. Mobile is deferred. This is not a website. The shell UI is native and AppKit-centered, with no Electron or other extra UI engine. Editor version 1 reuses the VS Code core; its hosting is open ([ADR 0002](docs/decisions/0002-editor-browser-agent-scope.md)).
+Desktop: macOS first; Linux and Windows later. Mobile is deferred. This is not a website. The shell UI is AppKit plus Pliant's own DSL (no SwiftUI), with no Electron or other extra UI engine. Editor version 1 reuses the VS Code core; its hosting is open ([ADR 0002](docs/decisions/0002-editor-browser-agent-scope.md)).
 
 ## Stack
 

@@ -31,7 +31,7 @@ layer) are described in [modules-vision.md](../design/modules-vision.md).
 | Agents | A built-in agent, internal only, on Mojo IPC. It is never exposed outside Pliant. Pliant exposes its capabilities to the user's external agent through MCP (external agent → Pliant). The built-in agent reaches the external agent through A2A, one way (built-in → external), to reuse its memory without importing it. MCP ships first; A2A follows. The built-in agent works without an external agent. |
 | Editor, version 1 | Reuse the VS Code core. VS Code extensions are out of scope. |
 | Editor, long term | An own, lighter editor with VS Code compatibility. |
-| Shell UI | Native, AppKit-centered. No Electron or other extra UI engine. AI writes the user's layout, so correctness, performance, and stability come first. The DSL layer translates definitions to native views and refreshes only the changed parts. |
+| Shell UI | AppKit plus Pliant's own DSL. No SwiftUI, no Electron, no other UI engine. AI writes the user's layout, so correctness, performance, and stability come first. The DSL layer translates definitions to native views and refreshes only the changed parts. |
 | Data | One local SQLite database for information objects. Files on disk remain the source of truth. |
 | Next milestone | A minimal browse + edit loop. |
 | Platforms | macOS first. Linux and Windows later. Mobile deferred. |
@@ -82,8 +82,7 @@ These come from the assistant's review. The owner has not accepted them.
 This is the only list of open product questions. Other documents link here.
 
 1. Editor version 1 hosting.
-2. The AppKit/SwiftUI split for the native shell renderer.
-3. Owner review of the [information-object draft](../design/information-objects.md),
+2. Owner review of the [information-object draft](../design/information-objects.md),
    including its listed open points.
 
 Engineering details (DSL syntax, plugin runtime, code-execution sandbox, MCP

@@ -5,7 +5,7 @@ state bindings, interactions, and native rendering.
 
 **Boundary:** UI code uses public operations and observable state. It cannot
 access Chromium, protected profile data, credentials, or core implementation details.
-The renderer is native and AppKit-centered; the DSL layer translates definitions
+The renderer is AppKit plus Pliant's own DSL (no SwiftUI); the DSL layer translates definitions
 to native views with diff-based partial refresh. DSL syntax is not designed yet.
 
 **Scope:** the DSL covers the browse, edit, and agent areas
