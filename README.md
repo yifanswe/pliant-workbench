@@ -2,7 +2,7 @@
 
 **Browse, edit, and work with your agent in one application.**
 
-[Four modules](docs/design/modules-vision.md) · [Design philosophy](DESIGN_PHILOSOPHY.md) · [Decisions](docs/decisions/0002-editor-browser-agent-scope.md) · [Implementation plan](IMPLEMENTATION_PLAN.md) · [Module map](MODULES.md) · [Discuss an idea](https://github.com/yifanswe/pliant-browser/issues)
+[Four modules](docs/design/modules-vision.md) · [Design philosophy](DESIGN_PHILOSOPHY.md) · [Decisions](docs/decisions/0002-editor-browser-agent-scope.md) · [Implementation plan](IMPLEMENTATION_PLAN.md) · [Module map](MODULES.md) · [Discuss an idea](https://github.com/yifanswe/pliant-workbench/issues)
 
 ![Pliant concept: a web page and a shared scratch pad side by side. Selected text goes to the scratch pad, the agent fills a placeholder and proposes a change for the user to apply or reject.](assets/hero.png)
 

@@ -26,7 +26,7 @@ For Pliant, use our own `services/agent/` for the agent service contract and the
 ## Target tree
 
 ```text
-pliant-browser/
+pliant-workbench/
 ├── apps/
 │   ├── browser/                  # Executable composition and trusted recovery entry
 │   └── embedder_test/            # Independent manual and automated API test app
