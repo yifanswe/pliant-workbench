@@ -2,13 +2,13 @@
 
 ### Don't adapt to your tools. Grow your own.
 
-Pliant is not a workbench. It is the infrastructure to **build your own** and keep changing it.
+Pliant workbench is not a workbench. It is the infrastructure to **build your own** and keep changing it.
 
 ![Pliant concept: a web page and a shared scratch pad side by side, shaped by the user and their agent.](assets/hero.png)
 
 ## The idea
 
-Every app ships a fixed idea of how you should work. A browser to read. An editor to write. A terminal to run. Slack and Zoom to talk. A chat box for AI. You spend your day copying between them.
+Every app ships a fixed idea of how you should work. A browser to read. An editor to write. A terminal to run. Slack and Zoom to talk. A chat box for AI. Optimizing the workflow between them is hard.
 
 Pliant flips this. Your workbench is **never finished**. You describe the workflow you want, your AI builds it on Pliant, and you reshape it tomorrow.
 
