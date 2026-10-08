@@ -226,4 +226,4 @@ def architecture():
 
 if __name__ == '__main__':
     architecture()
-    print('Rendered assets/architecture.png. hero.png comes from assets/hero.html (headless Chrome, 1600x810).')
+    print('Rendered assets/architecture.png. hero.png comes from assets/workbench-hero.html (headless Chrome, 1600x810).')

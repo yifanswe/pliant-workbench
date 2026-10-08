@@ -4,7 +4,7 @@
 
 Pliant workbench is not a workbench. It is the infrastructure to **build your own** and keep changing it.
 
-![Pliant concept: a web page and a shared scratch pad side by side, shaped by the user and their agent.](assets/hero.png)
+![Pliant concept: a web page and a shared scratch pad side by side, shaped by the user and their agent.](assets/workbench-hero.png)
 
 ## The idea
 
