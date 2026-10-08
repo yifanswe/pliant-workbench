@@ -1,0 +1,79 @@
+<!doctype html>
+<!-- Source for assets/hero.png. Render: tools/render_hero.sh -->
+<html><head><meta charset="utf-8"><style>
+:root{--ink:#1C302C;--muted:#647570;--paper:#F6F4EC;--line:#D5DCD1;--white:#FFFEF9;
+--green:#BCE9B1;--blue:#C6D9F4;--orange:#F3D2AE;--purple:#DCD3F2;--yellow:#FFF1B8}
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1600px;height:810px;background:var(--paper);font-family:-apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;color:var(--ink);padding:56px 64px;overflow:hidden}
+.tag{display:inline-block;background:var(--green);border-radius:20px;padding:6px 14px;font-size:15px;font-weight:700;letter-spacing:.06em}
+h1{font-size:64px;font-weight:800;letter-spacing:-.02em;margin-top:18px}
+h1 em{font-style:normal;background:linear-gradient(transparent 62%,var(--green) 62%)}
+.sub{font-size:24px;color:var(--muted);margin-top:10px}
+.row{display:flex;align-items:flex-start;gap:0;margin-top:44px}
+.stage{width:430px}
+.when{font-size:15px;font-weight:700;letter-spacing:.08em;color:var(--muted);margin-bottom:10px}
+.win{height:330px;background:var(--white);border:2px solid var(--line);border-radius:18px;box-shadow:6px 10px 0 #E3E5DB;overflow:hidden;display:flex;flex-direction:column}
+.bar{height:34px;border-bottom:2px solid var(--line);display:flex;align-items:center;gap:7px;padding:0 14px;flex:none}
+.dot{width:10px;height:10px;border-radius:50%}
+.body{flex:1;display:flex;gap:8px;padding:10px}
+.col{display:flex;flex-direction:column;gap:8px}
+.p{border-radius:10px;padding:9px 10px;font-size:13px;font-weight:700;position:relative}
+.p small{display:block;font-weight:400;color:var(--muted);margin-top:3px;font-size:11.5px}
+.ln{height:5px;border-radius:3px;background:#D7DED4;margin-top:7px}
+.hl{background:var(--yellow);border-radius:4px;height:22px;margin-top:8px}
+.mono{font-family:"SF Mono",Menlo,monospace;font-weight:500;font-size:11px;color:#BFE6C8}
+.say{width:120px;align-self:center;margin-top:60px;text-align:center;position:relative}
+.bubble{background:var(--ink);color:#fff;font-size:13.5px;line-height:1.35;border-radius:14px;padding:10px 11px;text-align:left}
+.bubble b{color:var(--green)}
+.arrow{font-size:34px;color:#7E9A8C;margin-top:8px}
+.foot{margin-top:52px;display:flex;justify-content:space-between;align-items:center}
+.base{background:var(--ink);color:#fff;border-radius:18px;padding:16px 26px;font-size:20px;flex:1}
+.base b{color:var(--green);font-size:14px;letter-spacing:.08em;display:block;margin-bottom:4px}
+.note{font-size:13px;color:var(--muted);letter-spacing:.06em;margin-top:14px}
+</style></head><body>
+<span class="tag">PLIANT WORKBENCH</span>
+<h1>A workbench that is <em>never finished.</em></h1>
+<div class="sub">You describe how you want to work. Your AI reshapes it. Every day.</div>
+
+<div class="row">
+ <!-- Day 1 -->
+ <div class="stage"><div class="when">DAY 1 · A FAMILIAR START</div>
+  <div class="win"><div class="bar"><i class="dot" style="background:#DB9B8A"></i><i class="dot" style="background:#E4C982"></i><i class="dot" style="background:#98BE97"></i></div>
+   <div class="body"><div class="col" style="flex:1">
+    <div class="p" style="background:#F0F1EB;font-weight:400;color:var(--muted)">example.org/article</div>
+    <div class="p" style="background:var(--white);border:2px solid var(--line);flex:1">Article
+     <div class="ln"></div><div class="ln" style="width:85%"></div><div class="ln"></div><div class="ln" style="width:70%"></div><div class="ln"></div><div class="ln" style="width:90%"></div><div class="ln" style="width:60%"></div></div>
+   </div></div></div></div>
+
+ <div class="say"><div class="bubble">“When I select text, open a <b>scratch pad</b> next to it.”</div><div class="arrow">→</div></div>
+
+ <!-- Week 2 -->
+ <div class="stage"><div class="when">WEEK 2 · READ AND WRITE</div>
+  <div class="win"><div class="bar"><i class="dot" style="background:#DB9B8A"></i><i class="dot" style="background:#E4C982"></i><i class="dot" style="background:#98BE97"></i></div>
+   <div class="body">
+    <div class="col" style="flex:1.1"><div class="p" style="background:var(--blue);flex:1">Browse
+     <div class="ln"></div><div class="ln" style="width:80%"></div><div class="hl"></div><div class="ln"></div><div class="ln" style="width:65%"></div><div class="ln"></div></div></div>
+    <div class="col" style="flex:1"><div class="p" style="background:var(--orange);flex:1">Scratch pad<small>you + agent</small>
+     <div class="hl" style="height:16px"></div><div class="ln" style="background:#C9A98A"></div><div class="ln" style="background:#C9A98A;width:70%"></div>
+     <div class="p" style="background:var(--purple);margin-top:10px;font-size:11.5px">Agent: link found ↺</div></div></div>
+   </div></div></div>
+
+ <div class="say"><div class="bubble">“Add a <b>terminal</b> and my team’s <b>Slack</b>.”</div><div class="arrow">→</div></div>
+
+ <!-- Month 3 -->
+ <div class="stage"><div class="when">MONTH 3 · ENTIRELY YOURS</div>
+  <div class="win"><div class="bar"><i class="dot" style="background:#DB9B8A"></i><i class="dot" style="background:#E4C982"></i><i class="dot" style="background:#98BE97"></i></div>
+   <div class="body">
+    <div class="col" style="width:92px"><div class="p" style="background:var(--green);flex:1">Slack<small># design</small><small># infra</small><div class="p" style="background:var(--white);margin-top:8px;font-size:11px;font-weight:400">reply drafted ✓</div></div></div>
+    <div class="col" style="flex:1">
+     <div class="p" style="background:var(--blue);flex:1">Browse<div class="ln"></div><div class="hl" style="height:14px"></div><div class="ln" style="width:70%"></div></div>
+     <div class="p" style="background:var(--ink);height:86px;color:#fff">Terminal<div class="mono">$ cargo test<br>✗ 1 failed → pad</div></div>
+    </div>
+    <div class="col" style="width:118px"><div class="p" style="background:var(--orange);flex:1">Notes<div class="ln" style="background:#C9A98A"></div><div class="ln" style="background:#C9A98A;width:60%"></div></div>
+     <div class="p" style="background:var(--purple)">Agent<small>Apply · Reject</small></div></div>
+   </div></div></div>
+</div>
+
+<div class="foot"><div class="base"><b>ONE FOUNDATION · BUILT BY PLIANT</b>Chromium engine · Editor + terminal · Your agent via MCP · Native UI DSL · Preview, apply, roll back</div></div>
+<div class="note">CONCEPT ILLUSTRATION — NOT A PRODUCT SCREENSHOT</div>
+</body></html>

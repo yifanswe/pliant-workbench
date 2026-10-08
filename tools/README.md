@@ -8,7 +8,7 @@ activation, and recovery commands.
 product language. Tools expose and inspect product behavior but do not own
 upgrade policy, durable migration state, or the trusted recovery path.
 
-**Status:** [`render_assets.py`](render_assets.py) renders the checked-in concept
+**Status:** [`render_assets.py`](render_assets.py) renders `architecture.png`. `assets/hero.html` is the source for `hero.png`: screenshot it with headless Chrome at 1600x810. Both are concept
 artwork. The obsolete directory/link checker was removed during the implemented
 layout migration. No general product build/preview toolchain exists yet. Do not
 add scaffold or checkout-only validators and tests as a substitute for
